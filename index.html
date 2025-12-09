@@ -48,41 +48,40 @@
         </div>
     </section>
 
-    <!-- Servicios -->
+    <!-- Servicios - Carrusel Deslizante -->
     <section id="servicios">
         <h2>Nuestros Servicios</h2>
-        <div class="servicios-grid">
-            <div class="servicio-card">
-                <div class="servicio-icon"></div>
-                <h3>Construcción Residencial</h3>
-                <p>Diseñamos y construimos hogares que se adaptan a tu estilo de vida, con acabados de primera calidad.</p>
+        <div class="servicios-carrusel">
+            <button class="carrusel-btn prev" id="btnPrev">‹</button>
+            <div class="carrusel-track" id="carruselTrack">
+                <div class="servicio-card">
+                    <h3>Construcción Residencial</h3>
+                    <p>Diseñamos y construimos hogares que se adaptan a tu estilo de vida, con acabados de primera calidad.</p>
+                </div>
+                <div class="servicio-card">
+                    <h3>Construcción Comercial</h3>
+                    <p>Espacios comerciales funcionales y modernos que potencian tu negocio.</p>
+                </div>
+                <div class="servicio-card">
+                    <h3>Remodelación</h3>
+                    <p>Transformamos espacios existentes en ambientes renovados y contemporáneos.</p>
+                </div>
+                <div class="servicio-card">
+                    <h3>Diseño Arquitectónico</h3>
+                    <p>Creamos diseños innovadores que combinan estética y funcionalidad.</p>
+                </div>
+                <div class="servicio-card">
+                    <h3>Instalaciones</h3>
+                    <p>Sistemas eléctricos, hidráulicos y de climatización de última generación.</p>
+                </div>
+                <div class="servicio-card">
+                    <h3>Asesoría</h3>
+                    <p>Consultoría especializada para proyectos de construcción de cualquier magnitud.</p>
+                </div>
             </div>
-            <div class="servicio-card">
-                <div class="servicio-icon"></div>
-                <h3>Construcción Comercial</h3>
-                <p>Espacios comerciales funcionales y modernos que potencian tu negocio.</p>
-            </div>
-            <div class="servicio-card">
-                <div class="servicio-icon"></div>
-                <h3>Remodelación</h3>
-                <p>Transformamos espacios existentes en ambientes renovados y contemporáneos.</p>
-            </div>
-            <div class="servicio-card">
-                <div class="servicio-icon"></div>
-                <h3>Diseño Arquitectónico</h3>
-                <p>Creamos diseños innovadores que combinan estética y funcionalidad.</p>
-            </div>
-            <div class="servicio-card">
-                <div class="servicio-icon"></div>
-                <h3>Instalaciones</h3>
-                <p>Sistemas eléctricos, hidráulicos y de climatización de última generación.</p>
-            </div>
-            <div class="servicio-card">
-                <div class="servicio-icon"></div>
-                <h3>Asesoría</h3>
-                <p>Consultoría especializada para proyectos de construcción de cualquier magnitud.</p>
-            </div>
+            <button class="carrusel-btn next" id="btnNext">›</button>
         </div>
+        <div class="carrusel-dots" id="carruselDots"></div>
     </section>
 
     <!-- Proyectos -->
@@ -146,8 +145,6 @@
     <section id="contacto">
         <h2>Contáctanos</h2>
         <div class="contacto-wrapper">
-            
-            
             <div class="form-container">
                 <form id="contactForm" action="https://formsubmit.co/jhoan.azul.7@gmail.com" method="POST">
                     <input type="text" name="_honey" style="display:none">

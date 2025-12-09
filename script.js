@@ -32,8 +32,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-
-
 // ===== HEADER SCROLL EFFECT =====
 let lastScroll = 0;
 const header = document.querySelector('header');
@@ -141,7 +139,7 @@ const cardsObserver = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-document.querySelectorAll('.servicio-card, .proyecto-card').forEach(el => {
+document.querySelectorAll('.proyecto-card').forEach(el => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(30px)';
     el.style.transition = 'all 0.6s ease';
@@ -254,118 +252,107 @@ document.querySelectorAll('a[href="#"]').forEach(link => {
     });
 });
 
+// ===== CARRUSEL DE SERVICIOS V12 - DESLIZANTE IZQUIERDA A DERECHA =====
+// ===== CARRUSEL DE SERVICIOS V13 - DESLIZANTE =====
+const track = document.getElementById('carruselTrack');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+const dotsContainer = document.getElementById('carruselDots');
 
-// ===== CARRUSEL DE SERVICIOS =====
-const carruselWrapper = document.getElementById('carruselWrapper');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const indicadoresContainer = document.getElementById('indicadores');
-
-if (carruselWrapper && prevBtn && nextBtn) {
-    const cards = carruselWrapper.querySelectorAll('.servicio-card');
+if (track && btnPrev && btnNext && dotsContainer) {
+    const cards = track.querySelectorAll('.servicio-card');
     const totalCards = cards.length;
     let currentIndex = 0;
-    let cardsToShow = 3;
+    let cardsVisible = 2; // Ahora muestra 2 cards a la vez
 
-    // Función para actualizar cardsToShow según el ancho de pantalla
-    function updateCardsToShow() {
+    function getCardsVisible() {
         const width = window.innerWidth;
-        if (width <= 768) {
-            cardsToShow = 1;
-        } else if (width <= 1200) {
-            cardsToShow = 2;
-        } else {
-            cardsToShow = 3;
-        }
+        if (width <= 1200) return 1; // Móvil/tablet: 1 card
+        return 2; // Desktop: 2 cards
     }
 
-    // Crear indicadores
-    function createIndicators() {
-        indicadoresContainer.innerHTML = '';
-        const totalIndicators = Math.ceil(totalCards / cardsToShow);
+    function createDots() {
+        dotsContainer.innerHTML = '';
+        cardsVisible = getCardsVisible();
+        const totalSlides = totalCards - cardsVisible + 1;
         
-        for (let i = 0; i < totalIndicators; i++) {
-            const indicador = document.createElement('div');
-            indicador.classList.add('indicador');
-            if (i === 0) indicador.classList.add('active');
-            indicador.addEventListener('click', () => goToSlide(i));
-            indicadoresContainer.appendChild(indicador);
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('carrusel-dot');
+            if (i === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
         }
     }
 
-    // Actualizar indicadores activos
-    function updateIndicators() {
-        const indicadores = indicadoresContainer.querySelectorAll('.indicador');
-        const activeIndex = Math.floor(currentIndex / cardsToShow);
-        indicadores.forEach((ind, idx) => {
-            ind.classList.toggle('active', idx === activeIndex);
+    function updateDots() {
+        const dots = dotsContainer.querySelectorAll('.carrusel-dot');
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
         });
     }
 
-    // Ir a un slide específico
     function goToSlide(index) {
-        currentIndex = index * cardsToShow;
-        const maxIndex = totalCards - cardsToShow;
-        if (currentIndex > maxIndex) currentIndex = maxIndex;
-        if (currentIndex < 0) currentIndex = 0;
+        currentIndex = index;
+        cardsVisible = getCardsVisible();
         
-        const cardWidth = cards[0].offsetWidth;
-        const gap = 32; // 2rem = 32px
-        const offset = -(currentIndex * (cardWidth + gap));
+        const card = cards[0];
+        const cardWidth = card.offsetWidth;
+        const gap = 40; // 2.5rem = 40px
+        const moveAmount = -(currentIndex * (cardWidth + gap));
         
-        carruselWrapper.style.transform = `translateX(${offset}px)`;
-        updateIndicators();
+        track.style.transform = `translateX(${moveAmount}px)`;
+        updateDots();
     }
 
-    // Botón anterior
-    prevBtn.addEventListener('click', () => {
-        currentIndex -= cardsToShow;
-        if (currentIndex < 0) {
-            currentIndex = totalCards - cardsToShow;
+    btnPrev.addEventListener('click', () => {
+        cardsVisible = getCardsVisible();
+        if (currentIndex > 0) {
+            currentIndex--;
+        } else {
+            currentIndex = totalCards - cardsVisible;
         }
-        goToSlide(Math.floor(currentIndex / cardsToShow));
+        goToSlide(currentIndex);
     });
 
-    // Botón siguiente
-    nextBtn.addEventListener('click', () => {
-        currentIndex += cardsToShow;
-        if (currentIndex >= totalCards) {
+    btnNext.addEventListener('click', () => {
+        cardsVisible = getCardsVisible();
+        const maxIndex = totalCards - cardsVisible;
+        if (currentIndex < maxIndex) {
+            currentIndex++;
+        } else {
             currentIndex = 0;
         }
-        goToSlide(Math.floor(currentIndex / cardsToShow));
+        goToSlide(currentIndex);
     });
 
-    // Auto-play cada 5 segundos
-    let autoplayInterval = setInterval(() => {
-        nextBtn.click();
+    let autoSlide = setInterval(() => {
+        btnNext.click();
     }, 5000);
 
-    // Pausar autoplay al hover
-    carruselWrapper.addEventListener('mouseenter', () => {
-        clearInterval(autoplayInterval);
+    track.addEventListener('mouseenter', () => {
+        clearInterval(autoSlide);
     });
 
-    carruselWrapper.addEventListener('mouseleave', () => {
-        autoplayInterval = setInterval(() => {
-            nextBtn.click();
+    track.addEventListener('mouseleave', () => {
+        autoSlide = setInterval(() => {
+            btnNext.click();
         }, 5000);
     });
 
-    // Inicializar
-    updateCardsToShow();
-    createIndicators();
-
-    // Actualizar al cambiar tamaño de ventana
+    createDots();
+    
+    let resizeTimeout;
     window.addEventListener('resize', () => {
-        updateCardsToShow();
-        createIndicators();
-        goToSlide(0);
-        currentIndex = 0;
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            createDots();
+            currentIndex = 0;
+            goToSlide(0);
+        }, 250);
     });
 }
 
-console.log('🎠 Carrusel de servicios cargado correctamente');
-
+console.log('🎠 Carrusel V13 cargado - 2 tarjetas visibles');
 // ===== LOG DE CARGA =====
-console.log('✅ Constructora Elite - Sitio Web V3 cargado correctamente');
-console.log('🏗️ Todas las animaciones e interacciones están activas');
+console.log('✅ Sitio Web V12 cargado correctamente');
