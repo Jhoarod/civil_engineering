@@ -253,7 +253,7 @@ document.querySelectorAll('a[href="#"]').forEach(link => {
 });
 
 // ===== CARRUSEL DE SERVICIOS V12 - DESLIZANTE IZQUIERDA A DERECHA =====
-// ===== CARRUSEL DE SERVICIOS V13 - DESLIZANTE =====
+// ===== CARRUSEL DE SERVICIOS V14 - CORREGIDO =====
 const track = document.getElementById('carruselTrack');
 const btnPrev = document.getElementById('btnPrev');
 const btnNext = document.getElementById('btnNext');
@@ -263,18 +263,18 @@ if (track && btnPrev && btnNext && dotsContainer) {
     const cards = track.querySelectorAll('.servicio-card');
     const totalCards = cards.length;
     let currentIndex = 0;
-    let cardsVisible = 2; // Ahora muestra 2 cards a la vez
+    let cardsVisible = 2;
 
     function getCardsVisible() {
         const width = window.innerWidth;
-        if (width <= 1200) return 1; // Móvil/tablet: 1 card
-        return 2; // Desktop: 2 cards
+        if (width <= 1200) return 1;
+        return 2;
     }
 
     function createDots() {
         dotsContainer.innerHTML = '';
         cardsVisible = getCardsVisible();
-        const totalSlides = totalCards - cardsVisible + 1;
+        const totalSlides = Math.ceil(totalCards / cardsVisible);
         
         for (let i = 0; i < totalSlides; i++) {
             const dot = document.createElement('div');
@@ -287,18 +287,26 @@ if (track && btnPrev && btnNext && dotsContainer) {
 
     function updateDots() {
         const dots = dotsContainer.querySelectorAll('.carrusel-dot');
+        const activeSlide = Math.floor(currentIndex / cardsVisible);
         dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === currentIndex);
+            dot.classList.toggle('active', index === activeSlide);
         });
     }
 
-    function goToSlide(index) {
-        currentIndex = index;
+    function goToSlide(slideIndex) {
         cardsVisible = getCardsVisible();
+        currentIndex = slideIndex * cardsVisible;
+        
+        // Limitar el índice al máximo posible
+        const maxIndex = totalCards - cardsVisible;
+        if (currentIndex > maxIndex) currentIndex = maxIndex;
+        if (currentIndex < 0) currentIndex = 0;
         
         const card = cards[0];
         const cardWidth = card.offsetWidth;
         const gap = 40; // 2.5rem = 40px
+        
+        // Calcular desplazamiento por grupos de cards
         const moveAmount = -(currentIndex * (cardWidth + gap));
         
         track.style.transform = `translateX(${moveAmount}px)`;
@@ -307,23 +315,27 @@ if (track && btnPrev && btnNext && dotsContainer) {
 
     btnPrev.addEventListener('click', () => {
         cardsVisible = getCardsVisible();
-        if (currentIndex > 0) {
-            currentIndex--;
-        } else {
-            currentIndex = totalCards - cardsVisible;
+        const currentSlide = Math.floor(currentIndex / cardsVisible);
+        let newSlide = currentSlide - 1;
+        
+        if (newSlide < 0) {
+            newSlide = Math.ceil(totalCards / cardsVisible) - 1;
         }
-        goToSlide(currentIndex);
+        
+        goToSlide(newSlide);
     });
 
     btnNext.addEventListener('click', () => {
         cardsVisible = getCardsVisible();
-        const maxIndex = totalCards - cardsVisible;
-        if (currentIndex < maxIndex) {
-            currentIndex++;
-        } else {
-            currentIndex = 0;
+        const currentSlide = Math.floor(currentIndex / cardsVisible);
+        const totalSlides = Math.ceil(totalCards / cardsVisible);
+        let newSlide = currentSlide + 1;
+        
+        if (newSlide >= totalSlides) {
+            newSlide = 0;
         }
-        goToSlide(currentIndex);
+        
+        goToSlide(newSlide);
     });
 
     let autoSlide = setInterval(() => {
@@ -353,6 +365,6 @@ if (track && btnPrev && btnNext && dotsContainer) {
     });
 }
 
-console.log('🎠 Carrusel V13 cargado - 2 tarjetas visibles');
+console.log('✅ Carrusel V14 corregido - Sin cortes');
 // ===== LOG DE CARGA =====
 console.log('✅ Sitio Web V12 cargado correctamente');

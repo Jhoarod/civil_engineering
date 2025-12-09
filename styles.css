@@ -287,30 +287,38 @@ h2::after {
 }
 
 /* ===== SERVICIOS - CARRUSEL V12 ===== */
-/* ===== SERVICIOS - CARRUSEL V13 ===== */
+/* ===== SERVICIOS - CARRUSEL V14 CORREGIDO ===== */
+/* ===== SERVICIOS - CARRUSEL V15 - BOTONES FUERA ===== */
 #servicios {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     overflow: hidden;
-    padding: 6rem 0;
+    padding: 6rem 5%;
 }
 
 .servicios-carrusel {
     position: relative;
     max-width: 1600px;
     margin: 0 auto;
-    padding: 0 80px;
+    padding: 0 100px;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.carrusel-wrapper {
+    flex: 1;
+    overflow: hidden;
 }
 
 .carrusel-track {
     display: flex;
     gap: 2.5rem;
-    overflow: hidden;
     padding: 3rem 0;
     transition: transform 0.5s ease-in-out;
 }
 
 .servicio-card {
-    min-width: calc((100% - 5rem) / 2);
+    width: calc((100% - 2.5rem) / 2);
     min-height: 280px;
     background: white;
     padding: 3.5rem 3rem;
@@ -355,11 +363,8 @@ h2::after {
     font-size: 1.1rem;
 }
 
-/* Botones del carrusel */
+/* Botones del carrusel - FUERA DE LAS TARJETAS */
 .carrusel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
     background: white;
     border: 2px solid #e74c3c;
     color: #e74c3c;
@@ -374,20 +379,19 @@ h2::after {
     align-items: center;
     justify-content: center;
     line-height: 1;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .carrusel-btn:hover {
     background: #e74c3c;
     color: white;
-    transform: translateY(-50%) scale(1.1);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
 }
 
-.carrusel-btn.prev {
-    left: 15px;
-}
-
-.carrusel-btn.next {
-    right: 15px;
+.carrusel-btn:active {
+    transform: scale(0.95);
 }
 
 /* Indicadores de puntos */
@@ -416,13 +420,17 @@ h2::after {
 /* Responsive */
 @media (max-width: 1200px) {
     .servicio-card {
-        min-width: calc(100% - 2.5rem);
+        width: 100%;
+    }
+    
+    .servicios-carrusel {
+        padding: 0 80px;
     }
 }
 
 @media (max-width: 768px) {
     .servicio-card {
-        min-width: 100%;
+        width: 100%;
         min-height: 250px;
         padding: 2.5rem 2rem;
     }
@@ -437,6 +445,7 @@ h2::after {
     
     .servicios-carrusel {
         padding: 0 70px;
+        gap: 1rem;
     }
     
     .carrusel-btn {
@@ -445,7 +454,6 @@ h2::after {
         font-size: 1.8rem;
     }
 }
-
 /* ===== PROYECTOS ===== */
 #proyectos {
     background: white;
