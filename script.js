@@ -253,16 +253,14 @@ document.querySelectorAll('a[href="#"]').forEach(link => {
 });
 
 // ===== CARRUSEL DE SERVICIOS V12 - DESLIZANTE IZQUIERDA A DERECHA =====
-// ===== CARRUSEL DE SERVICIOS V14 - CORREGIDO =====
+// ===== CARRUSEL DE SERVICIOS V17 - FIX COMPLETO =====
 const track = document.getElementById('carruselTrack');
 const btnPrev = document.getElementById('btnPrev');
 const btnNext = document.getElementById('btnNext');
 const dotsContainer = document.getElementById('carruselDots');
 
 if (track && btnPrev && btnNext && dotsContainer) {
-    const cards = track.querySelectorAll('.servicio-card');
-    const totalCards = cards.length;
-    let currentIndex = 0;
+    let currentSlide = 0;
     let cardsVisible = 2;
 
     function getCardsVisible() {
@@ -271,15 +269,20 @@ if (track && btnPrev && btnNext && dotsContainer) {
         return 2;
     }
 
+    function getTotalSlides() {
+        const cards = track.querySelectorAll('.servicio-card');
+        cardsVisible = getCardsVisible();
+        return Math.ceil(cards.length / cardsVisible);
+    }
+
     function createDots() {
         dotsContainer.innerHTML = '';
-        cardsVisible = getCardsVisible();
-        const totalSlides = Math.ceil(totalCards / cardsVisible);
+        const totalSlides = getTotalSlides();
         
         for (let i = 0; i < totalSlides; i++) {
             const dot = document.createElement('div');
             dot.classList.add('carrusel-dot');
-            if (i === 0) dot.classList.add('active');
+            if (i === currentSlide) dot.classList.add('active');
             dot.addEventListener('click', () => goToSlide(i));
             dotsContainer.appendChild(dot);
         }
@@ -287,59 +290,59 @@ if (track && btnPrev && btnNext && dotsContainer) {
 
     function updateDots() {
         const dots = dotsContainer.querySelectorAll('.carrusel-dot');
-        const activeSlide = Math.floor(currentIndex / cardsVisible);
         dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === activeSlide);
+            dot.classList.toggle('active', index === currentSlide);
         });
     }
 
     function goToSlide(slideIndex) {
+        const cards = track.querySelectorAll('.servicio-card');
+        const totalCards = cards.length;
         cardsVisible = getCardsVisible();
-        currentIndex = slideIndex * cardsVisible;
+        const totalSlides = getTotalSlides();
         
-        // Limitar el índice al máximo posible
-        const maxIndex = totalCards - cardsVisible;
-        if (currentIndex > maxIndex) currentIndex = maxIndex;
-        if (currentIndex < 0) currentIndex = 0;
+        // Validar el slideIndex
+        if (slideIndex < 0) {
+            currentSlide = totalSlides - 1;
+        } else if (slideIndex >= totalSlides) {
+            currentSlide = 0;
+        } else {
+            currentSlide = slideIndex;
+        }
         
+        // Calcular el índice de la primera card a mostrar
+        let cardIndex = currentSlide * cardsVisible;
+        
+        // Ajustar si es el último slide y hay cards impares
+        const remainingCards = totalCards - cardIndex;
+        if (remainingCards < cardsVisible && remainingCards > 0) {
+            cardIndex = totalCards - cardsVisible;
+        }
+        
+        // Obtener dimensiones
         const card = cards[0];
+        if (!card) return;
+        
         const cardWidth = card.offsetWidth;
         const gap = 40; // 2.5rem = 40px
         
-        // Calcular desplazamiento por grupos de cards
-        const moveAmount = -(currentIndex * (cardWidth + gap));
+        // Calcular desplazamiento
+        const moveAmount = -(cardIndex * (cardWidth + gap));
         
         track.style.transform = `translateX(${moveAmount}px)`;
         updateDots();
     }
 
     btnPrev.addEventListener('click', () => {
-        cardsVisible = getCardsVisible();
-        const currentSlide = Math.floor(currentIndex / cardsVisible);
-        let newSlide = currentSlide - 1;
-        
-        if (newSlide < 0) {
-            newSlide = Math.ceil(totalCards / cardsVisible) - 1;
-        }
-        
-        goToSlide(newSlide);
+        goToSlide(currentSlide - 1);
     });
 
     btnNext.addEventListener('click', () => {
-        cardsVisible = getCardsVisible();
-        const currentSlide = Math.floor(currentIndex / cardsVisible);
-        const totalSlides = Math.ceil(totalCards / cardsVisible);
-        let newSlide = currentSlide + 1;
-        
-        if (newSlide >= totalSlides) {
-            newSlide = 0;
-        }
-        
-        goToSlide(newSlide);
+        goToSlide(currentSlide + 1);
     });
 
     let autoSlide = setInterval(() => {
-        btnNext.click();
+        goToSlide(currentSlide + 1);
     }, 5000);
 
     track.addEventListener('mouseenter', () => {
@@ -347,24 +350,36 @@ if (track && btnPrev && btnNext && dotsContainer) {
     });
 
     track.addEventListener('mouseleave', () => {
+        clearInterval(autoSlide);
         autoSlide = setInterval(() => {
-            btnNext.click();
+            goToSlide(currentSlide + 1);
         }, 5000);
     });
 
+    // Función para reinicializar el carrusel
+    function reinitCarousel() {
+        currentSlide = 0;
+        createDots();
+        goToSlide(0);
+    }
+
+    // Inicializar
     createDots();
+    goToSlide(0);
     
+    // Actualizar al cambiar tamaño de ventana
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
-            createDots();
-            currentIndex = 0;
-            goToSlide(0);
+            reinitCarousel();
         }, 250);
     });
+    
+    // Exponer función global
+    window.reiniciarCarruselServicios = reinitCarousel;
 }
 
-console.log('✅ Carrusel V14 corregido - Sin cortes');
+console.log('✅ Carrusel V17 - Fix completo con slides correctos');
 // ===== LOG DE CARGA =====
 console.log('✅ Sitio Web V12 cargado correctamente');
