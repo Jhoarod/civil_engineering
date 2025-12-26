@@ -380,6 +380,6 @@ if (track && btnPrev && btnNext && dotsContainer) {
     window.reiniciarCarruselServicios = reinitCarousel;
 }
 
-console.log('✅ Carrusel V17 - Fix completo con slides correctos');
+console.log(' Carrusel V17 - Fix completo con slides correctos');
 // ===== LOG DE CARGA =====
-console.log('✅ Sitio Web V12 cargado correctamente');
+console.log(' Sitio Web V12 cargado correctamente');
